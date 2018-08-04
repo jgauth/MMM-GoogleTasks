@@ -84,7 +84,7 @@ Module.register("MMM-GoogleTasks",{
 		wrapper.className = "container ";
 		wrapper.className += this.config.tableClass;
 
-		// var numTasks = Object.keys(this.tasks).length;
+		 var numTasks = Object.keys(this.tasks).length;
 
 		if (!this.tasks) {
 			wrapper.innerHTML = (this.loaded) ? "EMPTY" : "LOADING";
@@ -96,8 +96,9 @@ Module.register("MMM-GoogleTasks",{
 
 			var titleWrapper, dateWrapper, noteWrapper;
 
-			this.tasks.forEach((item, index) => {
-
+			//this.tasks.forEach((item, index) => {
+				for (i = 0; i < numTasks; i++) {
+				item = this.tasks[i];
 				titleWrapper = document.createElement('div');
 				titleWrapper.className = "item title";
 				titleWrapper.innerHTML = "<i class=\"fa fa-circle-thin\" ></i>" + item.title;
@@ -127,14 +128,14 @@ Module.register("MMM-GoogleTasks",{
 				}
 
 				// Create borders between parent items
-				if (index < this.tasks.length-1 && !this.tasks[index+1].parent) {
+				if (numTasks < this.tasks.length-1 && !this.tasks[numTasks+1].parent) {
 					titleWrapper.style.borderBottom = "1px solid #666";
 					dateWrapper.style.borderBottom = "1px solid #666";
 				}
 
 				wrapper.appendChild(titleWrapper);
 				wrapper.appendChild(dateWrapper);
-			});
+			};
 
 			return wrapper;
 		}
