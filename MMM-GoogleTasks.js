@@ -84,7 +84,10 @@ Module.register("MMM-GoogleTasks",{
 		wrapper.className = "container ";
 		wrapper.className += this.config.tableClass;
 
-		 var numTasks = Object.keys(this.tasks).length;
+		var numTasks = 0;
+		if(this.tasks) {
+			var numTasks = Object.keys(this.tasks).length;
+		}
 
 		if (!this.tasks) {
 			wrapper.innerHTML = (this.loaded) ? "EMPTY" : "LOADING";
