@@ -98,10 +98,42 @@ Module.register("MMM-GoogleTasks",{
 		if (this.config.ordering === "myorder") { 
 
 			var titleWrapper, dateWrapper, noteWrapper;
-
-			//this.tasks.forEach((item, index) => {
-				for (i = 0; i < numTasks; i++) {
+			var parentIDs;
+			var children;
+			
+			//find all children
+			for (i = 0; i < numTasks; i++) {
 				item = this.tasks[i];
+				
+				if (item.parent) {
+					parentIDs.push(item.parent);
+					children.push(item);
+				}
+				
+			}
+			
+			//sort with children under parent
+			var sorted;
+			for (i = 0; i < numTasks; i++) {
+				item = this.tasks[i];
+				
+				if (!item.parent) {
+					sorted.push(item);
+				}
+				
+				if (parentIDs.includes(item.id)) {
+					for (i = 0; i < children.length; i++) {
+						var child = children[i];
+						if (child.parent == item.id) {
+							sorted.push(child);
+						}
+					}
+				}
+			}
+			
+			//add to wrapper
+			for (i = 0; i < sorted.length; i++) {
+				item = sorted[i];
 				titleWrapper = document.createElement('div');
 				titleWrapper.className = "item title";
 				titleWrapper.innerHTML = "<i class=\"fa fa-circle-thin\" ></i>" + item.title;
