@@ -98,39 +98,26 @@ Module.register("MMM-GoogleTasks",{
 		if (this.config.ordering === "myorder") { 
 
 			var titleWrapper, dateWrapper, noteWrapper;
-			var parentIDs;
-			var children;
-			
+			var sorted = [];
+
 			//find all children
+			Log.log("Finding all children from " + numTasks + " tasks.");
 			for (i = 0; i < numTasks; i++) {
 				item = this.tasks[i];
-				
 				if (item.parent) {
-					parentIDs.push(item.parent);
-					children.push(item);
+					continue;
 				}
-				
-			}
-			
-			//sort with children under parent
-			var sorted;
-			for (i = 0; i < numTasks; i++) {
-				item = this.tasks[i];
-				
-				if (!item.parent) {
-					sorted.push(item);
-				}
-				
-				if (parentIDs.includes(item.id)) {
-					for (i = 0; i < children.length; i++) {
-						var child = children[i];
-						if (child.parent == item.id) {
-							sorted.push(child);
-						}
+
+				sorted.push(item);
+				for (j = 0; j < numTasks; j++) {
+					var child = this.tasks[j];
+					if (child.parent == item.id) {
+						sorted.push(child);
 					}
 				}
 			}
-			
+
+			Log.log("Done sorting ready to add " + sorted.length + "items to task wrapper");
 			//add to wrapper
 			for (i = 0; i < sorted.length; i++) {
 				item = sorted[i];
@@ -170,7 +157,10 @@ Module.register("MMM-GoogleTasks",{
 
 				wrapper.appendChild(titleWrapper);
 				wrapper.appendChild(dateWrapper);
+
+				Log.log("Added " + item.id + " to wrapper");
 			};
+			Log.log("Done and returning wrapper");
 
 			return wrapper;
 		}
