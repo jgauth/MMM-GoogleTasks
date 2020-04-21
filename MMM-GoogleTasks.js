@@ -94,12 +94,20 @@ Module.register("MMM-GoogleTasks",{
 			wrapper.className = this.config.tableClass + " dimmed";
 			return wrapper;
 		}
-
-		if (this.config.ordering === "myorder") { 
-
 			var titleWrapper, dateWrapper, noteWrapper;
 			var sorted = [];
 
+			// ----- SORT TASKS BY DUE DATE ASC
+			this.task.sort(function(a, b) {
+				return a.due - b.due;
+			});
+
+			// ----- SORT TASKS BY DUE DATE DESC
+			if (this.config.ordering === "desc") {
+				this.tasks.reverse();
+			}
+
+			// ------ SORT CHILDREN TO PARENT
 			//find all children
 			Log.log("Finding all children from " + numTasks + " tasks.");
 			for (i = 0; i < numTasks; i++) {
@@ -118,7 +126,10 @@ Module.register("MMM-GoogleTasks",{
 			}
 
 			Log.log("Done sorting ready to add " + sorted.length + "items to task wrapper");
-			//add to wrapper
+
+			// ------ DONE SORTING CHILDREN UNDER PARENT.
+
+			// ------ add to wrapper
 			for (i = 0; i < sorted.length; i++) {
 				item = sorted[i];
 				titleWrapper = document.createElement('div');
@@ -163,6 +174,6 @@ Module.register("MMM-GoogleTasks",{
 			Log.log("Done and returning wrapper");
 
 			return wrapper;
-		}
+		
 	}
 });
