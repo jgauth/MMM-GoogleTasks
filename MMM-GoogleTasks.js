@@ -95,32 +95,25 @@ Module.register("MMM-GoogleTasks",{
 			return wrapper;
 		}
 			var titleWrapper, dateWrapper, noteWrapper;
-			var sorted = [];
-			
-		//TODO INSERT SORTING OF UNDEFINDE DUE DATES.
-			if (this.config.ordering === "dateAsc" || this.config.ordering === "dateDesc") {
-				// ----- SORT TASKS BY DUE DATE ASC
-				this.tasks.sort(function(a, b) {
-					if (a.due == undefined) {
-						return 1;
-					}else if (b.due == undefined) {
-						return -1;
-					}else {
-						return new Date(a.due) - new Date(b.due);
-					}
-				});
-			}
 
-			// ----- SORT TASKS BY DUE DATE DESC
-			if (this.config.ordering === "dateDesc") {
+			// ----- SORT TASKS BY DUE DATE ASC			
+			if (this.config.ordering === "dateAsc" || this.config.ordering === "dateDesc") {
 				this.tasks.sort(function(a, b) {
-					if (a.due == undefined) {
-						return 1;
-					}else if (b.due == undefined) {
-						return -1;
-					}else {
-						return new Date(b.due) - new Date(a.due);
-					}
+					// ---- IF DATES MATCH OR UNDEFINED, SORT ALPHABETICAL
+					if (a.due == b.due) {
+						if (a.title > b.title) return 1;
+						if (a.title < b.title) return -1;
+					} else {
+						// ----- Force all undefined to the bottom
+						if (b.due == undefined) {
+							return -1;
+						}else {
+							// ----- CHECK IF DESC IS SELECTED, AND SORT.
+							if (this.config.ordering === "dateDesc") return new Date(b.due) - new Date (a.due);
+							// ----- ELSE SORT ASC.
+							return new Date(a.due) - new Date(b.due);
+						}
+					}	
 				});
 			}
 
@@ -128,7 +121,7 @@ Module.register("MMM-GoogleTasks",{
 				Log.log("Alphabetical sorting not yet implemented.");
 			}
 
-
+			var sorted = [];
 			// ------ SORT CHILDREN TO PARENT
 			//find all children
 			Log.log("Finding all children from " + numTasks + " tasks.");
