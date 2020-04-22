@@ -96,16 +96,38 @@ Module.register("MMM-GoogleTasks",{
 		}
 			var titleWrapper, dateWrapper, noteWrapper;
 			var sorted = [];
-
-			// ----- SORT TASKS BY DUE DATE ASC
-			this.task.sort(function(a, b) {
-				return a.due - b.due;
-			});
+			
+		//TODO INSERT SORTING OF UNDEFINDE DUE DATES.
+			if (this.config.ordering === "dateAsc" || this.config.ordering === "dateDesc") {
+				// ----- SORT TASKS BY DUE DATE ASC
+				this.tasks.sort(function(a, b) {
+					if (a.due == undefined) {
+						return 1;
+					}else if (b.due == undefined) {
+						return -1;
+					}else {
+						return new Date(a.due) - new Date(b.due);
+					}
+				});
+			}
 
 			// ----- SORT TASKS BY DUE DATE DESC
-			if (this.config.ordering === "desc") {
-				this.tasks.reverse();
+			if (this.config.ordering === "dateDesc") {
+				this.tasks.sort(function(a, b) {
+					if (a.due == undefined) {
+						return 1;
+					}else if (b.due == undefined) {
+						return -1;
+					}else {
+						return new Date(b.due) - new Date(a.due);
+					}
+				});
 			}
+
+			if (this.config.ordering === "alphabeticalAsc" || this.config.ordering == "alphabeticalDesc") {
+				Log.log("Alphabetical sorting not yet implemented.");
+			}
+
 
 			// ------ SORT CHILDREN TO PARENT
 			//find all children
