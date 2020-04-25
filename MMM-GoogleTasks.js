@@ -84,21 +84,69 @@ Module.register("MMM-GoogleTasks",{
 		wrapper.className = "container ";
 		wrapper.className += this.config.tableClass;
 
-		 var numTasks = Object.keys(this.tasks).length;
+		var numTasks = 0;
+		if(this.tasks) {
+			var numTasks = Object.keys(this.tasks).length;
+		}
 
 		if (!this.tasks) {
 			wrapper.innerHTML = (this.loaded) ? "EMPTY" : "LOADING";
 			wrapper.className = this.config.tableClass + " dimmed";
 			return wrapper;
 		}
-
-		if (this.config.ordering === "myorder") { 
-
 			var titleWrapper, dateWrapper, noteWrapper;
 
-			//this.tasks.forEach((item, index) => {
-				for (i = 0; i < numTasks; i++) {
+			// ----- SORT TASKS BY DUE DATE ASC			
+			if (this.config.ordering === "dateAsc" || this.config.ordering === "dateDesc") {
+				this.tasks.sort(function(a, b) {
+					// ---- IF DATES MATCH OR UNDEFINED, SORT ALPHABETICAL
+					if (a.due == b.due) {
+						if (a.title > b.title) return 1;
+						if (a.title < b.title) return -1;
+					} else {
+						// ----- Force all undefined to the bottom
+						if (b.due == undefined) {
+							return -1;
+						}else {
+							// ----- CHECK IF DESC IS SELECTED, AND SORT.
+							if (this.config.ordering === "dateDesc") return new Date(b.due) - new Date (a.due);
+							// ----- ELSE SORT ASC.
+							return new Date(a.due) - new Date(b.due);
+						}
+					}	
+				});
+			}
+
+			if (this.config.ordering === "alphabeticalAsc" || this.config.ordering == "alphabeticalDesc") {
+				Log.log("Alphabetical sorting not yet implemented.");
+			}
+
+			var sorted = [];
+			// ------ SORT CHILDREN TO PARENT
+			//find all children
+			Log.log("Finding all children from " + numTasks + " tasks.");
+			for (i = 0; i < numTasks; i++) {
 				item = this.tasks[i];
+				if (item.parent) {
+					continue;
+				}
+
+				sorted.push(item);
+				for (j = 0; j < numTasks; j++) {
+					var child = this.tasks[j];
+					if (child.parent == item.id) {
+						sorted.push(child);
+					}
+				}
+			}
+
+			Log.log("Done sorting ready to add " + sorted.length + "items to task wrapper");
+
+			// ------ DONE SORTING CHILDREN UNDER PARENT.
+
+			// ------ add to wrapper
+			for (i = 0; i < sorted.length; i++) {
+				item = sorted[i];
 				titleWrapper = document.createElement('div');
 				titleWrapper.className = "item title";
 				titleWrapper.innerHTML = "<i class=\"fa fa-circle-thin\" ></i>" + item.title;
@@ -135,9 +183,12 @@ Module.register("MMM-GoogleTasks",{
 
 				wrapper.appendChild(titleWrapper);
 				wrapper.appendChild(dateWrapper);
+
+				Log.log("Added " + item.id + " to wrapper");
 			};
+			Log.log("Done and returning wrapper");
 
 			return wrapper;
-		}
+		
 	}
 });
